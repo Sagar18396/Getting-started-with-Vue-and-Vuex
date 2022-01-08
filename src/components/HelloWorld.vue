@@ -1,58 +1,108 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div>
+    <h3>My First name is {{ name }}, and Last name is {{ lastName }}.</h3>
+
+    <div class="counter">
+      <div class="display-area">
+        {{ counter }}
+      </div>
+      <div class="buttons">
+        <button @click="counterAdd">+</button>
+        <button @click="counterSubtract">-</button>
+      </div>
+    </div>
+
+    <h3>{{ fullName }}</h3>
+
+    <div class="joke">
+      <b>Joke:</b> {{ joke.value }}
+      <button @click="getJoke">Next Joke</button>
+    </div>
+
+    <div class="all-jokes">
+      All jokes:
+      <ul class="loop" v-for="joke in allJokes" :key="joke.id">
+        <li>
+          {{ joke.value }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="binding">
+      <input id="val" type="text" v-model="textVal" />
+      <label for="val">You've entered : {{ textVal }}</label>
+    </div>
+
+    <div>
+      <form class="form" name="myform" @submit.prevent="formSubmit()">
+        <input v-model="uName" type="text" placeholder="Enter uid" />
+        <input v-model="uPass" type="text" placeholder="Enter pass" />
+        <button>Submit</button>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: "Hello",
+  data() {
+    return {
+      name: "Sagar",
+      lastName: "Chauhan",
+      counter: 0,
+      joke: "",
+      allJokes: [],
+      textVal: "",
+      uName: "",
+      uPass: "",
+    };
+  },
+  methods: {
+    counterAdd() {
+      this.counter++;
+    },
+    counterSubtract() {
+      if (this.counter === 0) {
+        alert("Cannnot be less than 0");
+      } else this.counter--;
+    },
+    getJoke() {
+      axios
+        .get("https://api.chucknorris.io/jokes/random")
+        .then((response) => {
+          this.joke = response.data;
+          this.allJokes.push(this.joke);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    formSubmit() {
+      console.log(this.uName, this.uPass);
+      this.uName = "";
+      this.uPass = "";
+    },
+  },
+  computed: {
+    fullName() {
+      return `The full name is ${this.name} ${this.lastName}`;
+    },
+  },
+  created() {
+    this.getJoke();
+  },
+};
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+.counter,
+.joke,
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
 }
 </style>
